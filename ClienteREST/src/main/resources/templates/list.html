@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Product List</title>
+<link rel="stylesheet" type="text/css" href="estilo.css">
+</head>
+<body>
+	<div th:switch="${user.getUsername()}">
+		<p th:case="'Admin'">Soy el usuario admin</p>
+		<p th:case="'User'">Soy el usuario simple</p>
+	</div>
+	<!-- Logged user: <span sec:authentication="name">Bob</span>
+		Roles: <span sec:authentication="principal.authorities">[ROLE_USER, ROLE_ADMIN]</span>
+		-->
+	<h3>Product List</h3>
+	<hr>
+	<div th:each="prod : ${productos}">
+		<span><a th:href="@{/show/{id}/(id=${prod.code})}"
+			th:text="${prod.name}"></a> <a
+			th:href="@{/remove/{id}/(id=${prod.code})}" role="button"
+			class="buttonR">Remove</a></span><br>
+	</div>
+	<br>
+	<a th:href="@{/}" role="button" class="buttonB">Return</a>
+	<footer>
+		<a th:href="@{/logout}" role="button" class="buttonR">&#10006;
+			Cerrar Sesion</a>
+	</footer>
+</body>
+</html>
