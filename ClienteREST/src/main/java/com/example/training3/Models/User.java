@@ -2,20 +2,12 @@ package com.example.training3.Models;
 
 import java.util.List;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.FetchType;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@Entity
 public class User {
-	@Id
 	private String nombre;
 	private String contraseña;
-	@ElementCollection(fetch = FetchType.EAGER)
 	private List<GrantedAuthority> roles;
 	
 	public User () {}

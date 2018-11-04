@@ -1,9 +1,14 @@
 package com.example.training3.Controllers;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -17,12 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 import com.example.training3.Models.Product;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.training3.Models.Error;
 
 @Controller
 public class ProductList {
 	@Autowired
-    private RestTemplate restTemplate;
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Value("${rest.server.url}")
     private String restServerUrl;
@@ -44,9 +50,14 @@ public class ProductList {
 	@SuppressWarnings("unchecked")
 	@Secured({"ROLE_USER","ROLE_ADMIN"})
 	@GetMapping("/list")
-	public String list(Model model) {
-		List<Product> products = restTemplate.getForObject(restServerUrl + "products",List.class);
-		model.addAttribute("productos",products);
+	public String list(Model model) throws IOException {
+		URL url = new URL(restServerUrl + "/products");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.connect();
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<Product> products = mapper.readValue(connection.getInputStream(), List.class);
+        model.addAttribute("products", products);
 		return "list";
 	}
 	

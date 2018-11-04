@@ -15,7 +15,7 @@ import com.example.training3.Models.User;
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider{
 	@Autowired
-    private RestTemplate restTemplate;
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Value("${rest.server.url}")
     private String restServerUrl;
