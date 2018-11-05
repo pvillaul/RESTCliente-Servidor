@@ -1,14 +1,10 @@
 package com.example.training3.Controllers;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -22,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 import com.example.training3.Models.Product;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.training3.Models.Error;
 
 @Controller
@@ -42,22 +37,13 @@ public class ProductList {
 	public String logout() {
 		return "redirect:/login";
 	}
-	/*
-	@GetMapping("/")
-	public String route() {
-		return "index";
-	}*/
-	@SuppressWarnings("unchecked")
+	
 	@Secured({"ROLE_USER","ROLE_ADMIN"})
 	@GetMapping("/list")
 	public String list(Model model) throws IOException {
-		URL url = new URL(restServerUrl + "/products");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.connect();
-
-        ObjectMapper mapper = new ObjectMapper();
-        List<Product> products = mapper.readValue(connection.getInputStream(), List.class);
-        model.addAttribute("products", products);
+		@SuppressWarnings("unchecked")
+		List<Product> productos = restTemplate.getForObject(restServerUrl + "list",List.class);
+        model.addAttribute("productos", productos);
 		return "list";
 	}
 	
@@ -72,17 +58,8 @@ public class ProductList {
 	@Secured({"ROLE_ADMIN"})
 	@GetMapping("/remove/{id}")
 	public String delete(@PathVariable String id, Model model) {
-		if(restTemplate.getForObject(restServerUrl + "exists/" + id,Boolean.class) != null) {
-			//productRepository.delete(productRepository.findByCode(id));
-			restTemplate.exchange(restServerUrl + "remove", HttpMethod.DELETE, new HttpEntity<>(id),String.class);
-			//List<Product> productList = productRepository.findAll();
-			//model.addAttribute("productos",productList);
-			return "redirect:/list";
-		} else {
-			Error error = new Error("Error al Eliminar","No se ha podido eliminar el producto selecionado","list","Atras");
-			model.addAttribute("error",error);
-			return "aviso";
-		}
+		restTemplate.exchange(restServerUrl + "remove/"+id, HttpMethod.DELETE, new HttpEntity<>(id),String.class);
+		return "redirect:/list";
 	}
 	
 	@Secured({"ROLE_ADMIN"})
@@ -94,14 +71,12 @@ public class ProductList {
 	@Secured({"ROLE_ADMIN"})
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public String newProd(@ModelAttribute("product") Product product,BindingResult result, ModelMap model) {
-		if(restTemplate.getForObject(restServerUrl + "exists/" + product.getCode(),Boolean.class) == null) {
+		if(product != null) {
 			model.addAttribute("code", product.getCode());
 	        model.addAttribute("name", product.getName());
 	        model.addAttribute("description", product.getDescription());
 	        model.addAttribute("price", product.getPrice());
-	        //productos.put(product.getCode(), product);
-	        //productRepository.save(new Product(product.getCode(),product.getName(),product.getDescription(),product.getPrice()));
-	        restTemplate.exchange(restServerUrl + "product", HttpMethod.POST, new HttpEntity<>(product),Product.class);
+	        restTemplate.exchange(restServerUrl + "add", HttpMethod.POST, new HttpEntity<>(product),Product.class);
 	        return "resume";
 		} else {
 			Error error = new Error("Error al Crear el Producto","El codigo introducido coincide con un producto existente","addForm","Volver al formulario");

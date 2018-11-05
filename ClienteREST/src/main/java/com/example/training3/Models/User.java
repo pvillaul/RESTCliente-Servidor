@@ -2,12 +2,23 @@ package com.example.training3.Models;
 
 import java.util.List;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-public class User {
+@Entity
+public class User implements UserDetailsService {
+	@Id
 	private String nombre;
 	private String contraseña;
+	@ElementCollection(fetch = FetchType.EAGER)
 	private List<GrantedAuthority> roles;
 	
 	public User () {}
@@ -40,5 +51,11 @@ public class User {
 
 	public void setRoles(List<GrantedAuthority> roles) {
 		this.roles = roles;
+	}
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

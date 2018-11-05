@@ -1,7 +1,6 @@
 package com.example.training3.Components;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,16 +8,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import com.example.training3.Models.User;
+import com.example.training3.Repositories.UserRepository;
 
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider{
 	@Autowired
-    private RestTemplate restTemplate = new RestTemplate();
-
-    @Value("${rest.server.url}")
-    private String restServerUrl;
+	private UserRepository userRepository;
 
 	@Override
 	public Authentication authenticate(Authentication authentication)
@@ -29,7 +25,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 		
 		User user;
 		try {
-			user = restTemplate.getForObject(restServerUrl + "user/" + username,User.class);
+			user = userRepository.findByNombre(username);
 		} catch(Exception e) {
 			throw new BadCredentialsException("User not found");
 		}
