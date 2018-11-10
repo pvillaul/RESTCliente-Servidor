@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>Add Form</title>
+<title>Modify Form</title>
 <link rel="stylesheet" type="text/css" href="estilo.css">
 </head>
 <body>
-	<h1>New Product</h1>
+	<h1>Modify Product</h1>
 	<hr>
-	<form action="/spring-mvc-java/add" th:action="@{/add}"
+	<form action="/spring-mvc-java/modify" th:action="@{/modify}"
 		th:object="${product}" method="post" modelAttribute="product">
 		<p>
-			Code: <input type="text" th:field="*{code}" />
+			Code: <input type="text" th:field="*{code}" th:value="${oldprod.code}" />
 		</p>
 		<p>
-			Name: <input type="text" th:field="*{name}" />
+			Name: <input type="text" th:field="*{name}" th:value="${oldprod.name}" />
 		</p>
 		<p>
-			Description: <input type="text" th:field="*{description}" />
+			Description: <input type="text" th:field="*{description}" th:value="${oldprod.description}" />
 		</p>
 		<p>
-			Price: <input type="text" th:field="*{price}" />
+			Price: <input type="text" th:field="*{price}" th:value="${oldprod.price}" />
 		</p>
 		<br>
 		<p>

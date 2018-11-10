@@ -77,6 +77,31 @@ public class ProductList {
 	        model.addAttribute("description", product.getDescription());
 	        model.addAttribute("price", product.getPrice());
 	        restTemplate.exchange(restServerUrl + "add", HttpMethod.POST, new HttpEntity<>(product),Product.class);
+	        return "modify";
+		} else {
+			Error error = new Error("Error al Crear el Producto","El codigo introducido coincide con un producto existente","addForm","Volver al formulario");
+			model.addAttribute("error",error);
+			return "aviso";
+		}
+	}
+	
+	@Secured({"ROLE_ADMIN"})
+	@GetMapping("/modifyForm/{id}")
+	public String modifyProd(@PathVariable String id, Model model,@ModelAttribute Product product) {
+		Product oldprod = restTemplate.getForObject(restServerUrl + "show/" + id,Product.class);
+		model.addAttribute("oldprod",oldprod);
+		return "modifyForm";
+	}
+	
+	@Secured({"ROLE_ADMIN"})
+	@RequestMapping(value = "/modify", method = RequestMethod.PUT)
+	public String modifyProd(@ModelAttribute("product") Product product,BindingResult result, ModelMap model) {
+		if(product != null) {
+			model.addAttribute("code", product.getCode());
+	        model.addAttribute("name", product.getName());
+	        model.addAttribute("description", product.getDescription());
+	        model.addAttribute("price", product.getPrice());
+	        restTemplate.exchange(restServerUrl + "add", HttpMethod.PUT, new HttpEntity<>(product),Product.class);
 	        return "resume";
 		} else {
 			Error error = new Error("Error al Crear el Producto","El codigo introducido coincide con un producto existente","addForm","Volver al formulario");
